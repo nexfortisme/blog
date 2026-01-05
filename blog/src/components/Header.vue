@@ -9,7 +9,7 @@ const { isDark, toggleTheme } = useTheme();
   <header>
     <div class="header-container">
       <div class="logo">
-        <RouterLink to="/">blog</RouterLink>
+        <RouterLink to="/">dharrison.dev</RouterLink>
       </div>
       <div class="header-right">
         <nav>

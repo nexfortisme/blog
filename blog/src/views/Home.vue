@@ -1,6 +1,6 @@
 <script setup>
 import HomeCard from "../components/HomeCard.vue";
-import Posts from "../components/Posts.vue";
+import Posts from "../components/RecentPosts.vue";
 </script>
 
 <template>

@@ -6,7 +6,8 @@ const posts = ref([]);
 
 onMounted(async () => {
   try {
-    const response = await fetch("/content/index.json");
+    console.log("Current Directory");
+    const response = await fetch("https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json");
     const data = await response.json();
     // Sort by createdAt date (most recent first) and take last 4
     const sorted = data
@@ -45,7 +46,7 @@ const formatDate = (dateString) => {
 
 <template>
   <section class="posts-section">
-    <h2 class="section-title">Featured</h2>
+    <h2 class="section-title">Recent Posts</h2>
     <div v-if="posts.length === 0" class="loading">Loading posts...</div>
     <div v-else class="posts-list">
       <article v-for="post in posts" :key="post.id" class="post-card">

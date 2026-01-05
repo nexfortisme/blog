@@ -1,11 +1,20 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
+import { onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
 const post = ref(null);
 const content = ref("");
 const loading = ref(true);
+
+const stripFrontmatter = (markdown) => {
+  if (!markdown) return "";
+
+  // Match frontmatter between ---- and ---
+  const frontmatterRegex = /^----\s*\n[\s\S]*?\n---\s*\n/;
+  return markdown.replace(frontmatterRegex, "").trim();
+};
 
 onMounted(async () => {
   try {
@@ -17,13 +26,16 @@ onMounted(async () => {
     const foundPost = posts.find((p) => p.id === parseInt(postId));
 
     if (foundPost) {
+      console.log("Found Post", foundPost);
+
       post.value = foundPost;
 
       // Load the markdown content
-      const contentPath = foundPost.path.replace("../", "/content/");
-      const contentResponse = await fetch(contentPath);
+      // const contentPath = foundPost.path.replace("../", "/content/");
+      const contentResponse = await fetch(foundPost.githubPath);
       if (contentResponse.ok) {
-        content.value = await contentResponse.text();
+        const rawContnet = await contentResponse.text();
+        content.value = stripFrontmatter(rawContnet);
       }
     }
   } catch (error) {
@@ -47,7 +59,10 @@ onMounted(async () => {
         <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
       </div>
       <div class="markdown-content">
-        <pre>{{ content }}</pre>
+        <!-- <pre>{{ content }}</pre> -->
+        <pre>
+          <vue-markdown-it :source="content" />
+        </pre>
       </div>
     </article>
   </div>
