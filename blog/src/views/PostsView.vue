@@ -64,9 +64,8 @@ onMounted(async () => {
       <div class="filter-header">
         <span class="filter-label">Filter by tags:</span>
         <button
-          v-if="selectedTags.size > 0"
           @click="clearFilters"
-          class="clear-filters-btn"
+          :class="['clear-filters-btn', { show: selectedTags.size > 0 }]"
         >
           Clear filters
         </button>
@@ -187,9 +186,7 @@ h1 {
 }
 
 .filter-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: relative;
   margin-bottom: 0.75rem;
 }
 
@@ -200,6 +197,10 @@ h1 {
 }
 
 .clear-filters-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   background: transparent;
   border: 1px solid var(--border-color);
   color: var(--text-secondary);
@@ -208,6 +209,15 @@ h1 {
   cursor: pointer;
   font-size: 0.875rem;
   transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.clear-filters-btn.show {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 .clear-filters-btn:hover {
