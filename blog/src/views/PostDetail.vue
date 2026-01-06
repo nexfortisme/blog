@@ -1,12 +1,20 @@
 <script setup>
 import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
 import { onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
+const router = useRouter();
 const post = ref(null);
 const content = ref("");
 const loading = ref(true);
+
+const navigateToPostsWithTag = (tag) => {
+  router.push({
+    name: "Posts",
+    query: { tags: tag },
+  });
+};
 
 const stripFrontmatter = (markdown) => {
   if (!markdown) return "";
@@ -56,7 +64,14 @@ onMounted(async () => {
         {{ post.description }}
       </div>
       <div v-if="post.tags && post.tags.length" class="tags">
-        <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
+        <span
+          v-for="tag in post.tags"
+          :key="tag"
+          class="tag"
+          @click="navigateToPostsWithTag(tag)"
+        >
+          {{ tag }}
+        </span>
       </div>
       <div class="markdown-content">
         <!-- <pre>{{ content }}</pre> -->
@@ -114,6 +129,12 @@ onMounted(async () => {
   font-size: 0.875rem;
   color: var(--accent-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.tag:hover {
+  background-color: rgba(var(--accent-color-rgb), 0.3);
 }
 
 .markdown-content {

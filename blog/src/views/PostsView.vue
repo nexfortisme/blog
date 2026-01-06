@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import { RouterLink } from "vue-router";
+import { ref, onMounted, computed, watch } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
 const posts = ref([]);
 const tags = ref([]);
 const selectedTags = ref(new Set());
@@ -24,10 +26,31 @@ const toggleTag = (tag) => {
   } else {
     selectedTags.value.add(tag);
   }
+  updateQueryParams();
 };
 
 const clearFilters = () => {
   selectedTags.value.clear();
+  updateQueryParams();
+};
+
+const updateQueryParams = () => {
+  const tagArray = Array.from(selectedTags.value);
+  if (tagArray.length > 0) {
+    router.replace({
+      query: { tags: tagArray },
+    });
+  } else {
+    router.replace({ query: {} });
+  }
+};
+
+const loadTagsFromQuery = () => {
+  const queryTags = route.query.tags;
+  if (queryTags) {
+    const tagArray = Array.isArray(queryTags) ? queryTags : [queryTags];
+    selectedTags.value = new Set(tagArray);
+  }
 };
 
 onMounted(async () => {
@@ -52,7 +75,18 @@ onMounted(async () => {
   } catch (error) {
     console.error("Error Loading Tags:", error);
   }
+
+  // Load tags from query params after tags are loaded
+  loadTagsFromQuery();
 });
+
+// Watch for route query changes (e.g., browser back/forward)
+watch(
+  () => route.query.tags,
+  () => {
+    loadTagsFromQuery();
+  }
+);
 </script>
 
 <template>
