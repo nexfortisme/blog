@@ -86,24 +86,29 @@ onMounted(async () => {
       </div>
     </div>
 
+    <!-- <div v-if="posts.length > 0" class="filter-divider"></div> -->
+
     <div v-if="posts.length === 0" class="loading">Loading posts...</div>
     <div v-else-if="filteredPosts.length === 0" class="no-results">
       No posts match the selected filters.
     </div>
     <div v-else class="posts-list">
-      <article v-for="post in filteredPosts" :key="post.id" class="post-card">
-        <RouterLink :to="`/posts/${post.id}`" class="post-link">
-          <h2>{{ post.title || "Untitled" }}</h2>
-          <p v-if="post.description" class="description">
-            {{ post.description }}
-          </p>
-          <div v-if="post.tags && post.tags.length" class="tags">
-            <span v-for="tag in post.tags" :key="tag" class="tag">{{
-              tag
-            }}</span>
-          </div>
-        </RouterLink>
-      </article>
+      <template v-for="(post, index) in filteredPosts" :key="post.id">
+        <article class="post-card">
+          <RouterLink :to="`/posts/${post.id}`" class="post-link">
+            <h2>{{ post.title || "Untitled" }}</h2>
+            <p v-if="post.description" class="description">
+              {{ post.description }}
+            </p>
+            <div v-if="post.tags && post.tags.length" class="tags">
+              <span v-for="tag in post.tags" :key="tag" class="tag">{{
+                tag
+              }}</span>
+            </div>
+          </RouterLink>
+        </article>
+        <div v-if="index < filteredPosts.length - 1" class="post-divider"></div>
+      </template>
     </div>
   </div>
 </template>
@@ -114,7 +119,7 @@ onMounted(async () => {
 }
 
 h1 {
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
   color: var(--text-primary);
   font-weight: 400;
   transition: color 0.3s ease;
@@ -130,11 +135,11 @@ h1 {
 .posts-list {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
 .post-card {
   transition: opacity 0.2s;
+  padding: 2rem 0;
 }
 
 .post-card:hover {
@@ -179,17 +184,13 @@ h1 {
 
 .filter-bar {
   margin-bottom: 2rem;
-  padding: 1.5rem;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
 }
 
 .filter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .filter-label {
@@ -246,11 +247,22 @@ h1 {
 }
 
 .filter-info {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  margin-top: 0.75rem;
   color: var(--text-tertiary);
   font-size: 0.875rem;
+}
+
+.filter-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  margin-bottom: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.post-divider {
+  height: 1px;
+  background-color: var(--border-color);
+  transition: background-color 0.3s ease;
 }
 
 .no-results {
