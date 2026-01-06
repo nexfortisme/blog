@@ -1,19 +1,56 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { RouterLink } from "vue-router";
 
 const posts = ref([]);
+const tags = ref([]);
+const selectedTags = ref(new Set());
+
+const filteredPosts = computed(() => {
+  if (selectedTags.value.size === 0) {
+    return posts.value;
+  }
+  return posts.value.filter((post) => {
+    if (!post.tags || post.tags.length === 0) {
+      return false;
+    }
+    return post.tags.some((tag) => selectedTags.value.has(tag));
+  });
+});
+
+const toggleTag = (tag) => {
+  if (selectedTags.value.has(tag)) {
+    selectedTags.value.delete(tag);
+  } else {
+    selectedTags.value.add(tag);
+  }
+};
+
+const clearFilters = () => {
+  selectedTags.value.clear();
+};
 
 onMounted(async () => {
   try {
-    const response = await fetch(
+    const postsResponse = await fetch(
       "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json"
     );
-    const data = await response.json();
-    posts.value = data;
+    const postData = await postsResponse.json();
+    posts.value = postData;
     console.log("Posts", posts.value);
   } catch (error) {
     console.error("Error loading posts:", error);
+  }
+
+  try {
+    const tagResponse = await fetch(
+      "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/tag_index.json"
+    );
+    const tagData = await tagResponse.json();
+    tags.value = tagData;
+    console.log("Tags", tagData);
+  } catch (error) {
+    console.error("Error Loading Tags:", error);
   }
 });
 </script>
@@ -21,9 +58,40 @@ onMounted(async () => {
 <template>
   <div class="posts-container">
     <h1>Posts</h1>
+
+    <!-- Filter Bar -->
+    <div v-if="tags.length > 0" class="filter-bar">
+      <div class="filter-header">
+        <span class="filter-label">Filter by tags:</span>
+        <button
+          v-if="selectedTags.size > 0"
+          @click="clearFilters"
+          class="clear-filters-btn"
+        >
+          Clear filters
+        </button>
+      </div>
+      <div class="filter-tags">
+        <button
+          v-for="tag in tags"
+          :key="tag"
+          @click="toggleTag(tag)"
+          :class="['filter-tag', { active: selectedTags.has(tag) }]"
+        >
+          {{ tag }}
+        </button>
+      </div>
+      <div v-if="selectedTags.size > 0" class="filter-info">
+        Showing {{ filteredPosts.length }} of {{ posts.length }} posts
+      </div>
+    </div>
+
     <div v-if="posts.length === 0" class="loading">Loading posts...</div>
+    <div v-else-if="filteredPosts.length === 0" class="no-results">
+      No posts match the selected filters.
+    </div>
     <div v-else class="posts-list">
-      <article v-for="post in posts" :key="post.id" class="post-card">
+      <article v-for="post in filteredPosts" :key="post.id" class="post-card">
         <RouterLink :to="`/posts/${post.id}`" class="post-link">
           <h2>{{ post.title || "Untitled" }}</h2>
           <p v-if="post.description" class="description">
@@ -107,5 +175,88 @@ h1 {
   font-size: 0.875rem;
   color: var(--accent-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.filter-bar {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.filter-label {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.clear-filters-btn {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.clear-filters-btn:hover {
+  background-color: rgba(var(--accent-color-rgb), 0.1);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.filter-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.filter-tag {
+  background-color: rgba(var(--accent-color-rgb), 0.1);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-tag:hover {
+  background-color: rgba(var(--accent-color-rgb), 0.2);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.filter-tag.active {
+  background-color: rgba(var(--accent-color-rgb), 0.3);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  font-weight: 500;
+}
+
+.filter-info {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: var(--text-tertiary);
+  font-size: 1rem;
 }
 </style>
