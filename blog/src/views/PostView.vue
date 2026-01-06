@@ -51,8 +51,8 @@ const breadcrumbItems = computed(() => {
 const stripFrontmatter = (markdown) => {
   if (!markdown) return "";
 
-  // Match frontmatter between ---- and ---
-  const frontmatterRegex = /^----\s*\n[\s\S]*?\n---\s*\n/;
+  // Match frontmatter between ---- and ----
+  const frontmatterRegex = /^----\s*\n[\s\S]*?\n----\s*\n/;
   return markdown.replace(frontmatterRegex, "").trim();
 };
 
