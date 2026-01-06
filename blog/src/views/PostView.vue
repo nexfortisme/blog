@@ -1,14 +1,36 @@
 <script setup>
 import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
-import { onMounted, ref, computed } from "vue";
+import { onMounted, ref, computed, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Breadcrumb from "../components/Breadcrumb.vue";
+
+import { useHead } from "@unhead/vue";
 
 const route = useRoute();
 const router = useRouter();
 const post = ref(null);
 const content = ref("");
 const loading = ref(true);
+
+useHead({
+  title: computed(() => post.value?.title || "Post"),
+  meta: computed(() => {
+    if (!post.value) return [];
+    return [
+      { name: "description", content: post.value.description },
+      // Open Graph
+      { name: "ogTitle", content: post.value.title },
+      { name: "ogDescription", content: post.value.description },
+      { name: "ogImage", content: post.value.descriptionImage },
+      { name: "ogUrl", content: window.location.href },
+      // Twitter
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: post.value.title },
+      { name: "twitter:description", content: post.value.description },
+      { name: "twitter:image", content: post.value.descriptionImage },
+    ];
+  }),
+});
 
 const navigateToPostsWithTag = (tag) => {
   router.push({

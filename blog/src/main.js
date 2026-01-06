@@ -1,5 +1,7 @@
 import './assets/main.css'
 
+import { createHead } from '@unhead/vue/client'
+
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
@@ -17,4 +19,6 @@ if (isDark) {
   root.classList.remove("dark");
 }
 
-createApp(App).use(router).mount('#app')
+const head = createHead();
+
+createApp(App).use(router).use(head).mount('#app')

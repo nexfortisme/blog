@@ -63,7 +63,6 @@ onMounted(async () => {
     );
     const postData = await postsResponse.json();
     posts.value = postData;
-    console.log("posts", postData);
   } catch (error) {
     console.error("Error loading posts:", error);
   }
