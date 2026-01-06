@@ -6,7 +6,7 @@ msg="Content Update at $current_datetime"
 
 cd ..
 git add -A
-git c -m msg
+git c -m "$msg"
 git pu
 
 cd blog
