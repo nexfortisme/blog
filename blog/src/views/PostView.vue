@@ -65,7 +65,7 @@ onMounted(async () => {
       "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json"
     );
     const posts = await response.json();
-    const foundPost = posts.find((p) => p.id === parseInt(postId));
+    const foundPost = posts.find((p) => p.id === parseInt(postId)); // This could cause performance issues with a whole bunch of posts but I dont really yap that much
 
     if (foundPost) {
       post.value = foundPost;

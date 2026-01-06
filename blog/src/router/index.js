@@ -3,6 +3,7 @@ import Home from '../views/Home.vue'
 import Posts from '../views/AllPostsView.vue'
 import PostDetail from '../views/PostView.vue'
 import AboutMe from '../views/AboutMe.vue'
+import ResumeView from '../views/ResumeView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/about-me',
       name: 'AboutMe',
       component: AboutMe
+    },
+    {
+      path: '/about-me/resume',
+      name: 'Resume',
+      component: ResumeView
     }
   ]
 })
