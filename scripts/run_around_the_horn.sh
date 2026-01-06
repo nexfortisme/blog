@@ -9,6 +9,6 @@ git add -A
 git c -m msg
 git pu
 
-cd ../blog
+cd blog
 bun run build
 firebase deploy
