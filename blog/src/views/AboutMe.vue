@@ -44,6 +44,11 @@ const breadcrumbItems = [{ label: "Home", to: "/" }, { label: "About Me" }];
         For those looking for my resume,
         <RouterLink :to="{ name: 'Resume' }">find it here</RouterLink>.
       </p>
+      <br />
+      <div style="display: flex; flex-direction: column; align-items: center">
+        <h4>Random picture of myself holding a puppy</h4>
+        <img src="../assets/images/20230721_182820.JPG" style="width: 50%" />
+      </div>
     </div>
   </div>
 </template>
