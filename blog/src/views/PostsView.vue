@@ -99,12 +99,18 @@ onMounted(async () => {
             <p v-if="post.description" class="description">
               {{ post.description }}
             </p>
-            <div v-if="post.tags && post.tags.length" class="tags">
-              <span v-for="tag in post.tags" :key="tag" class="tag">{{
-                tag
-              }}</span>
-            </div>
           </RouterLink>
+          <div v-if="post.tags && post.tags.length" class="tags">
+            <span
+              v-for="tag in post.tags"
+              :key="tag"
+              class="tag"
+              :class="{ active: selectedTags.has(tag) }"
+              @click="toggleTag(tag)"
+            >
+              {{ tag }}
+            </span>
+          </div>
         </article>
         <div v-if="index < filteredPosts.length - 1" class="post-divider"></div>
       </template>
@@ -179,6 +185,17 @@ h1 {
   font-size: 0.875rem;
   color: var(--accent-color);
   transition: background-color 0.3s ease, color 0.3s ease;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.tag:hover {
+  background-color: rgba(var(--accent-color-rgb), 0.3);
+}
+
+.tag.active {
+  background-color: rgba(var(--accent-color-rgb), 0.4);
+  font-weight: 500;
 }
 
 .filter-bar {
