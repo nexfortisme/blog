@@ -1,8 +1,10 @@
-<script lang="ts" setup>
+<script setup>
 import { ref } from "vue";
+import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const showGif = ref(false);
-let hoverTimeout: ReturnType<typeof setTimeout> | null = null;
+let hoverTimeout = null;
 
 const handleMouseEnter = () => {
   hoverTimeout = setTimeout(() => {
@@ -48,6 +50,37 @@ const handleMouseLeave = () => {
     something that I'm intesresetd in, or to document some kind of problem I
     encountered and the steps I took to resolve it.
   </p>
+  <br />
+
+  <div class="links-section">
+    <h2>Contact Me</h2>
+    <div class="links-container">
+      <a href="mailto:david@dharrison.dev" class="link-item" aria-label="Email">
+        <FontAwesomeIcon :icon="faEnvelope" class="link-icon" />
+        <span>Email</span>
+      </a>
+      <a
+        href="https://github.com/nexfortisme"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-item"
+        aria-label="GitHub"
+      >
+        <FontAwesomeIcon :icon="faGithub" class="link-icon" />
+        <span>GitHub</span>
+      </a>
+      <a
+        href="https://www.linkedin.com/in/harrison042/"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="link-item"
+        aria-label="LinkedIn"
+      >
+        <FontAwesomeIcon :icon="faLinkedin" class="link-icon" />
+        <span>LinkedIn</span>
+      </a>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -84,5 +117,49 @@ const handleMouseLeave = () => {
 .gif-fade-enter-from,
 .gif-fade-leave-to {
   opacity: 0;
+}
+
+.links-section {
+  margin-top: 2rem;
+}
+
+.links-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+
+.links-container {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+}
+
+.link-item:hover {
+  background-color: var(--accent-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(var(--accent-color-rgb), 0.3);
+}
+
+.link-icon {
+  font-size: 1.2rem;
+}
+
+.link-item span {
+  font-size: 1rem;
 }
 </style>

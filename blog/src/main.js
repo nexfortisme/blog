@@ -1,10 +1,18 @@
 import './assets/main.css'
 
-import { createHead } from '@unhead/vue/client'
+import { createHead } from '@unhead/vue'
 
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
+
+// Configure FontAwesome
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { faEnvelope } from '@fortawesome/free-solid-svg-icons'
+import { faGithub, faLinkedin } from '@fortawesome/free-brands-svg-icons'
+
+library.add(faEnvelope, faGithub, faLinkedin)
 
 // Initialize theme before mounting
 const root = document.documentElement;
@@ -21,4 +29,6 @@ if (isDark) {
 
 const head = createHead();
 
-createApp(App).use(router).use(head).mount('#app')
+const app = createApp(App);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
+app.use(router).use(head).mount('#app')
