@@ -10,7 +10,7 @@ defineProps({
         (item) =>
           typeof item === "object" &&
           item.hasOwnProperty("label") &&
-          (item.hasOwnProperty("to") || item.hasOwnProperty("name"))
+          (item.hasOwnProperty("to") || item.hasOwnProperty("name") || true)
       );
     },
   },

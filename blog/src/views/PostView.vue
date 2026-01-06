@@ -39,17 +39,16 @@ onMounted(async () => {
     const postId = route.params.postId;
 
     // Load posts index to get the post details
-    const response = await fetch("/content/index.json");
+    const response = await fetch(
+      "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json"
+    );
     const posts = await response.json();
     const foundPost = posts.find((p) => p.id === parseInt(postId));
 
     if (foundPost) {
-      console.log("Found Post", foundPost);
-
       post.value = foundPost;
 
       // Load the markdown content
-      // const contentPath = foundPost.path.replace("../", "/content/");
       const contentResponse = await fetch(foundPost.githubPath);
       if (contentResponse.ok) {
         const rawContnet = await contentResponse.text();

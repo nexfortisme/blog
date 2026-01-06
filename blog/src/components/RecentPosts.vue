@@ -6,17 +6,22 @@ const posts = ref([]);
 
 onMounted(async () => {
   try {
-    const response = await fetch("https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json");
+    const response = await fetch(
+      "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json"
+    );
     const data = await response.json();
     // Sort by createdAt date (most recent first) and take last 4
-    const sorted = data
-      .sort((a, b) => {
-        const dateA = new Date(a.createdAt);
-        const dateB = new Date(b.createdAt);
-        return dateB - dateA;
-      })
-      .slice(0, 4);
-    posts.value = sorted;
+    // const sorted = data
+    //   .sort((a, b) => {
+    //     const dateA = new Date(a.createdAt);
+    //     const dateB = new Date(b.createdAt);
+    //     return dateB - dateA;
+    //   })
+    //   .slice(0, 4);
+    console.log("Post Data", data);
+    console.log("Post Data Slice", data.slice(0, 4));
+    posts.value = data.slice(0, 4);
+    console.log("Posts.value", posts.value);
   } catch (error) {
     console.error("Error loading posts:", error);
   }
