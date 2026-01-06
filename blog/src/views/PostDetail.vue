@@ -1,7 +1,8 @@
 <script setup>
 import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import Breadcrumb from "../components/Breadcrumb.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -15,6 +16,15 @@ const navigateToPostsWithTag = (tag) => {
     query: { tags: tag },
   });
 };
+
+const breadcrumbItems = computed(() => {
+  if (!post.value) return [];
+  return [
+    { label: "Home", to: "/" },
+    { label: "Posts", name: "Posts", query: route.query },
+    { label: post.value.title || "Untitled" },
+  ];
+});
 
 const stripFrontmatter = (markdown) => {
   if (!markdown) return "";
@@ -59,6 +69,7 @@ onMounted(async () => {
     <div v-if="loading" class="loading">Loading post...</div>
     <div v-else-if="!post" class="error">Post not found</div>
     <article v-else class="post-content">
+      <Breadcrumb :items="breadcrumbItems" />
       <h1>{{ post.title || "Untitled" }}</h1>
       <div v-if="post.description" class="description">
         {{ post.description }}

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import Breadcrumb from "../components/Breadcrumb.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -33,6 +34,8 @@ const clearFilters = () => {
   selectedTags.value.clear();
   updateQueryParams();
 };
+
+const breadcrumbItems = [{ label: "Home", to: "/" }, { label: "Posts" }];
 
 const updateQueryParams = () => {
   const tagArray = Array.from(selectedTags.value);
@@ -91,6 +94,7 @@ watch(
 
 <template>
   <div class="posts-container">
+    <Breadcrumb :items="breadcrumbItems" />
     <h1>Posts</h1>
 
     <!-- Filter Bar -->

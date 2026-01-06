@@ -6,7 +6,6 @@ const posts = ref([]);
 
 onMounted(async () => {
   try {
-    console.log("Current Directory");
     const response = await fetch("https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json");
     const data = await response.json();
     // Sort by createdAt date (most recent first) and take last 4

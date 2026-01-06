@@ -1,7 +1,12 @@
-<script setup></script>
+<script setup>
+import Breadcrumb from "../components/Breadcrumb.vue";
+
+const breadcrumbItems = [{ label: "Home", to: "/" }, { label: "About Me" }];
+</script>
 
 <template>
   <div class="about-me-container">
+    <Breadcrumb :items="breadcrumbItems" />
     <h1>About Me</h1>
     <div class="content">
       <p>Welcome to my blog! This is the About Me page.</p>
