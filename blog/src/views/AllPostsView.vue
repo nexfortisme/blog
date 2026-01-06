@@ -63,7 +63,6 @@ onMounted(async () => {
     );
     const postData = await postsResponse.json();
     posts.value = postData;
-    console.log("Posts", posts.value);
   } catch (error) {
     console.error("Error loading posts:", error);
   }
@@ -74,7 +73,6 @@ onMounted(async () => {
     );
     const tagData = await tagResponse.json();
     tags.value = tagData;
-    console.log("Tags", tagData);
   } catch (error) {
     console.error("Error Loading Tags:", error);
   }

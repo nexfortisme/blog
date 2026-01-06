@@ -1,10 +1,10 @@
 :root {
   /* Accent color - easily changeable */
-  --accent-color: #ff8c00;
-  --accent-color-rgb: 255, 140, 0;
+  --accent-color: #3B82F6;
+  --accent-color-rgb: 59, 130, 246;
   
   /* Dark theme background color - easily changeable */
-  --dark-bg-primary: #0a1929;
+  --dark-bg-primary: #1a1a1a;
   
   /* Dark theme (default) */
   --bg-primary: var(--dark-bg-primary);

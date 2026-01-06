@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
-import Posts from '../views/PostsView.vue'
-import PostDetail from '../views/PostDetail.vue'
+import Posts from '../views/AllPostsView.vue'
+import PostDetail from '../views/PostView.vue'
 import AboutMe from '../views/AboutMe.vue'
 
 const router = createRouter({
