@@ -89,6 +89,26 @@ watch(
     loadTagsFromQuery();
   }
 );
+
+const formatDate = (dateString) => {
+  if (!dateString || dateString === "0001-01-01T00:00:00Z") return "";
+  const date = new Date(dateString);
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+  return `${date.getDate()} ${months[date.getMonth()]}, ${date.getFullYear()}`;
+};
 </script>
 
 <template>
@@ -133,6 +153,9 @@ watch(
         <article class="post-card">
           <RouterLink :to="`/posts/${post.id}`" class="post-link">
             <h2>{{ post.title || "Untitled" }}</h2>
+            <div v-if="post.createdAt" class="post-date">
+              {{ formatDate(post.createdAt) }}
+            </div>
             <p v-if="post.description" class="description">
               {{ post.description }}
             </p>
@@ -171,6 +194,13 @@ h1 {
   text-align: center;
   padding: 2rem;
   color: var(--text-tertiary);
+  transition: color 0.3s ease;
+}
+
+.post-date {
+  color: var(--text-tertiary);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
   transition: color 0.3s ease;
 }
 
