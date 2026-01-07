@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
 import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useHead } from "@unhead/vue";
 import Breadcrumb from "../components/Breadcrumb.vue";
 
 const route = useRoute();
@@ -8,6 +9,21 @@ const router = useRouter();
 const posts = ref([]);
 const tags = ref([]);
 const selectedTags = ref(new Set());
+
+useHead({
+  title: computed(() => `dharrison.dev - Posts`),
+  meta: computed(() => {
+    return [
+      // Open Graph
+      { name: "ogTitle", content: `dharrison.dev - Posts` },
+      { name: "ogDescription", content: "All Posts" },
+      { name: "ogUrl", content: window.location.href },
+      // Twitter
+      { name: "twitter:title", content: `dharrison.dev - Posts` },
+      { name: "twitter:description", content: "All Posts" },
+    ];
+  }),
+});
 
 const filteredPosts = computed(() => {
   if (selectedTags.value.size === 0) {

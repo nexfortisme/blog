@@ -1,8 +1,25 @@
 <script setup>
 import { RouterLink } from "vue-router";
+import { computed } from "vue";
+import { useHead } from "@unhead/vue";
 import Breadcrumb from "../components/Breadcrumb.vue";
 
 const breadcrumbItems = [{ label: "Home", to: "/" }, { label: "About Me" }];
+
+useHead({
+  title: computed(() => `dharrison.dev - About Me`),
+  meta: computed(() => {
+    return [
+      // Open Graph
+      { name: "ogTitle", content: `dharrison.dev - About Me` },
+      { name: "ogDescription", content: "About Me" },
+      { name: "ogUrl", content: window.location.href },
+      // Twitter
+      { name: "twitter:title", content: `dharrison.dev - About Me` },
+      { name: "twitter:description", content: "About Me" },
+    ];
+  }),
+});
 </script>
 
 <template>

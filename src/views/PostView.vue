@@ -13,19 +13,19 @@ const content = ref("");
 const loading = ref(true);
 
 useHead({
-  title: computed(() => post.value?.title || "Post"),
+  title: computed(() => `dharrison.dev - ${post.value?.title || "Post"}`),
   meta: computed(() => {
     if (!post.value) return [];
     return [
       { name: "description", content: post.value.description },
       // Open Graph
-      { name: "ogTitle", content: post.value.title },
+      { name: "ogTitle", content: `dharrison.dev - ${post.value.title}` },
       { name: "ogDescription", content: post.value.description },
       { name: "ogImage", content: post.value.descriptionImage },
       { name: "ogUrl", content: window.location.href },
       // Twitter
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: post.value.title },
+      { name: "twitter:title", content: `dharrison.dev - ${post.value.title}` },
       { name: "twitter:description", content: post.value.description },
       { name: "twitter:image", content: post.value.descriptionImage },
     ];
