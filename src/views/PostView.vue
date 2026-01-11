@@ -1,8 +1,8 @@
 <script setup>
-import { VueMarkdownIt } from "@f3ve/vue-markdown-it";
 import { onMounted, ref, computed, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Breadcrumb from "../components/Breadcrumb.vue";
+import MarkdownRenderer from "../components/MarkdownRenderer.vue";
 
 import { useHead } from "@unhead/vue";
 
@@ -106,10 +106,7 @@ onMounted(async () => {
         </span>
       </div>
       <div class="markdown-content">
-        <!-- <pre>{{ content }}</pre> -->
-        <pre>
-          <vue-markdown-it :source="content" />
-        </pre>
+        <MarkdownRenderer :source="content" />
       </div>
     </article>
   </div>
@@ -174,16 +171,5 @@ onMounted(async () => {
   line-height: 1.8;
   color: var(--text-secondary);
   transition: color 0.3s ease;
-}
-
-.markdown-content pre {
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font-family: inherit;
-  background-color: var(--bg-secondary);
-  padding: 1rem;
-  border-radius: 4px;
-  overflow-x: auto;
-  transition: background-color 0.3s ease;
 }
 </style>
