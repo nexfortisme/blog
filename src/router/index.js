@@ -4,6 +4,7 @@ import Posts from '../views/AllPostsView.vue'
 import PostDetail from '../views/PostView.vue'
 import AboutMe from '../views/AboutMe.vue'
 import ResumeView from '../views/ResumeView.vue'
+import ProjectsView from '@/views/ProjectsView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/about-me/resume',
       name: 'Resume',
       component: ResumeView
+    },
+    {
+      path: '/about-me/projects',
+      name: 'Projects',
+      component: ProjectsView
     }
   ]
 })

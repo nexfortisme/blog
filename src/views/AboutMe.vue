@@ -43,7 +43,7 @@ useHead({
         half-baked attempts at trying to add further utility to it. It started
         as a fun little side project for my friends but snowballed into its
         current iteration as ways to make it more useful and limit the runaway
-        costs of using the OpenAI APIs.
+        costs of using the OpenAI APIs. Find a list of more projects <RouterLink :to="{name: 'Projects'}">here</RouterLink>.
       </p>
       <br />
       <p>
