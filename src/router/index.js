@@ -32,7 +32,10 @@ const router = createRouter({
     {
       path: '/about-me/resume',
       name: 'Resume',
-      component: ResumeView
+      component: ResumeView,
+      props: {
+        pdfUrl: 'https://www.dropbox.com/scl/fi/rcig7xhnremz88u4erhbq/Resume.pdf?rlkey=d476bk0olkjtm1p0fwgpg6dlr&st=468sic89&dl=0&raw=1'
+      }
     },
     {
       path: '/about-me/projects',
