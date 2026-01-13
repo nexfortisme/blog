@@ -21,7 +21,7 @@ const projects = [
   },
   {
     title: "This Website",
-    image: "https://via.placeholder.com/400x200?text=This+Website",
+    image: "https://github.com/nexfortisme/asset-store/blob/main/website_screenshot.png?raw=true",
     description:
       "My personal blog and portfolio website built with Vue.js. Serves as both a resume and a place to document interesting things I come across.",
     technologies: ["Vue.js", "Vite", "JavaScript", "CSS"],
