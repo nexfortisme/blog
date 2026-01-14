@@ -34,7 +34,8 @@ const router = createRouter({
       name: 'Resume',
       component: ResumeView,
       props: {
-        pdfUrl: 'https://www.dropbox.com/scl/fi/rcig7xhnremz88u4erhbq/Resume.pdf?rlkey=d476bk0olkjtm1p0fwgpg6dlr&st=468sic89&dl=0&raw=1'
+        // pdfUrl: 'https://www.dropbox.com/scl/fi/rcig7xhnremz88u4erhbq/Resume.pdf?rlkey=d476bk0olkjtm1p0fwgpg6dlr&st=468sic89&dl=0&raw=1'
+        pdfUrl: 'https://www.dropbox.com/scl/fi/ohyxbqu3epmngqjtllqq7/Resume_No_Phone_Number.pdf?rlkey=r73zj18xfgp177sx6on8vap6h&st=ti6ldchq&dl=0&raw=1'
       }
     },
     {
