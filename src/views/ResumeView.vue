@@ -74,7 +74,7 @@
             <div>
               <h3 class="jobTitle">
                 {{ job.title }}
-                <span class="muted">·</span>
+                <span class="muted">· </span>
                 <span class="company">{{ job.company }}</span>
               </h3>
               <div class="jobMeta">
@@ -180,7 +180,7 @@
       <div class="edu">
         <h3 class="jobTitle">
           {{ data.education.school }}
-          <span class="muted">·</span>
+          <span class="muted">· </span>
           <span class="company">{{ data.education.location }}</span>
         </h3>
         <div class="jobMeta">
