@@ -26,6 +26,13 @@ const projects = [
       "My personal blog and portfolio website built with Vue.js. Serves as both a resume and a place to document interesting things I come across.",
     technologies: ["Vue.js", "Vite", "JavaScript", "CSS"],
   },
+  {
+    title: "OSS Forums",
+    image: "https://github.com/nexfortisme/asset-store/blob/main/OSSForumsHomePage.png?raw=true",
+    description: "A simple, old-school, forum I'm working on because I got tired of all of the needless data collection of modern software. It's a simple, self hostable forum that allows you to create categories and topics and post to them.",
+    technologies: ["Vue.js", "BunJS", "SQLite"],
+    link: "https://github.com/nexfortisme/oss-forums"
+  }
 ];
 
 useHead({
