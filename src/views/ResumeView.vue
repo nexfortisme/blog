@@ -472,7 +472,14 @@ const defaultData = reactive<ResumeData>({
     ],
     "Operating Systems": ["Linux", "OSX", "Windows"],
     "AI Tools": ["GitHub CoPilot", "Cursor IDE", "ChatGPT", "Anthropic Claude"],
-    "AI Frameworks": ["OpenAI API", "LM Studio", "Sora API", "MCPs", "Model Embeddings", "KNN Classifiers"]
+    "AI Frameworks": [
+      "OpenAI API",
+      "LM Studio",
+      "Sora API",
+      "MCPs",
+      "Model Embeddings",
+      "KNN Classifiers",
+    ],
     // Productivity: ["Office"],
   },
   education: {
@@ -510,10 +517,32 @@ const personalProjects = [
     link: "https://github.com/nexfortisme/bot-person",
   },
   {
+    title: "Bart",
+    description:
+      "Next evolution of Bot Person but using a more natural means of communication; through just a normal discord chat instead of through slash commands or special alert keywords or characters.",
+    technologies: [
+      "SQLite",
+      "DiscordGo",
+      "OpenAI API",
+      "Golang",
+      "MCPs",
+      "Model Embeddings",
+      "KNN Classifiers",
+    ],
+    link: "https://github.com/nexfortisme/bart",
+  },
+  {
     title: "This Website",
     description:
       "My personal blog and portfolio website built with Vue.js. Serves as both a resume and a place to document interesting things I come across.",
     technologies: ["Vue.js", "Vite", "JavaScript", "CSS"],
+  },
+  {
+    title: "OSS Forums",
+    description:
+      "A simple, old-school, forum I'm working on because I got tired of all of the needless data collection of modern software. It's a simple, self hostable forum that allows you to create categories and topics and post to them.",
+    technologies: ["Vue.js", "BunJS", "SQLite"],
+    link: "https://github.com/nexfortisme/oss-forums",
   },
 ];
 

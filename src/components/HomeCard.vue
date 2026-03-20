@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from "vue";
-import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEnvelope,
+  faFile,
+  faProjectDiagram,
+} from "@fortawesome/free-solid-svg-icons";
 import { faGithub, faLinkedin } from "@fortawesome/free-brands-svg-icons";
 
 const showGif = ref(false);
@@ -78,6 +82,19 @@ const handleMouseLeave = () => {
       >
         <FontAwesomeIcon :icon="faLinkedin" class="link-icon" />
         <span>LinkedIn</span>
+      </a>
+    </div>
+  </div>
+  <div class="links-section">
+    <h2>Quick Links</h2>
+    <div class="links-container">
+      <a href="/about-me/resume" class="link-item" aria-label="Resume">
+        <FontAwesomeIcon :icon="faFile" class="link-icon" />
+        <span>Resume</span>
+      </a>
+      <a href="/about-me/projects" class="link-item" aria-label="Projects">
+        <FontAwesomeIcon :icon="faProjectDiagram" class="link-icon" />
+        <span>Personal Projects</span>
       </a>
     </div>
   </div>
