@@ -451,7 +451,7 @@ const defaultData = reactive<ResumeData>({
       "Apache Commons",
     ],
     "Runtime Environments": ["NodeJS", "Deno", "BunJS"],
-    Databases: ["MySQL"],
+    Databases: ["MySQL", "SQLite"],
     Concepts: [
       "Design Patterns",
       "REST",
@@ -472,7 +472,8 @@ const defaultData = reactive<ResumeData>({
     ],
     "Operating Systems": ["Linux", "OSX", "Windows"],
     "AI Tools": ["GitHub CoPilot", "Cursor IDE", "ChatGPT", "Anthropic Claude"],
-    Productivity: ["Office"],
+    "AI Frameworks": ["OpenAI API", "LM Studio", "Sora API", "MCPs", "Model Embeddings", "KNN Classifiers"]
+    // Productivity: ["Office"],
   },
   education: {
     school: "Elizabethtown College",
@@ -486,12 +487,12 @@ const defaultData = reactive<ResumeData>({
       "Database Systems, Software Engineering",
     ],
     projects: [
-        // {
-        //   name: "Movie Recommendations App",
-        //   stack: ["ReactJS", "React Router", "ExpressJS", "MySQL"],
-        //   description:
-        //     "Single-page web app that displays movie information and recommendations based on user ratings and other users' ratings. Frontend in React; backend in Express serving REST endpoints backed by MySQL.",
-        // },
+      // {
+      //   name: "Movie Recommendations App",
+      //   stack: ["ReactJS", "React Router", "ExpressJS", "MySQL"],
+      //   description:
+      //     "Single-page web app that displays movie information and recommendations based on user ratings and other users' ratings. Frontend in React; backend in Express serving REST endpoints backed by MySQL.",
+      // },
     ],
   },
   activities: [
@@ -518,7 +519,7 @@ const personalProjects = [
 
 const data = computed(() => props.resumeData ?? defaultData);
 const pdfUrl = computed(
-  () => props.pdfUrl ?? "https://dharrison.dev/resume.pdf"
+  () => props.pdfUrl ?? "https://dharrison.dev/resume.pdf",
 );
 
 const tabs = [
@@ -575,7 +576,7 @@ const filteredSkillCount = computed(() => {
   return groupSkills.value
     ? Object.values(filteredSkillsByCategory.value).reduce(
         (n, arr) => n + arr.length,
-        0
+        0,
       )
     : filteredSkillsFlat.value.length;
 });
@@ -616,7 +617,9 @@ useHead({
   border: 1px solid var(--border-color);
   border-radius: 14px;
   background: var(--bg-secondary);
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .title {
@@ -661,7 +664,9 @@ useHead({
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition:
+    background-color 0.3s ease,
+    transform 0.2s ease;
   border: none;
   cursor: pointer;
 }
@@ -687,7 +692,9 @@ useHead({
   text-decoration: none;
   background: var(--bg-primary);
   font-size: 14px;
-  transition: border-color 0.3s ease, color 0.3s ease,
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
     background-color 0.3s ease;
 }
 
@@ -697,7 +704,9 @@ useHead({
   border-radius: 14px;
   padding: 18px;
   background: var(--bg-secondary);
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .sectionHeader {
@@ -737,7 +746,9 @@ useHead({
   cursor: pointer;
   font-size: 14px;
   color: var(--text-secondary);
-  transition: border-color 0.3s ease, background-color 0.3s ease,
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
     color 0.3s ease;
 }
 
@@ -761,7 +772,9 @@ useHead({
   border-radius: 14px;
   padding: 14px;
   background: var(--bg-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .jobTop {
@@ -805,7 +818,9 @@ useHead({
   cursor: pointer;
   font-size: 13px;
   color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease,
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
     color 0.3s ease;
 }
 
@@ -827,7 +842,9 @@ useHead({
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease,
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
     color 0.3s ease;
 }
 
@@ -871,7 +888,9 @@ useHead({
   border: 1px solid var(--border-color);
   background: var(--bg-secondary);
   color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease,
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
     color 0.3s ease;
 }
 
@@ -905,7 +924,9 @@ useHead({
   font-size: 14px;
   background: var(--bg-primary);
   color: var(--text-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease,
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease,
     color 0.3s ease;
 }
 
@@ -940,7 +961,9 @@ useHead({
   border-radius: 14px;
   padding: 14px;
   background: var(--bg-primary);
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition:
+    border-color 0.3s ease,
+    background-color 0.3s ease;
 }
 
 .skillCat {
