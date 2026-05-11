@@ -11,6 +11,15 @@ const breadcrumbItems = [
 ];
 
 const projects = [
+{
+    title: "Relay",
+    image:
+      "https://raw.githubusercontent.com/nexfortisme/asset-store/refs/heads/main/relay_homepage.png",
+    description:
+      "An AI chat application but with all of the dials and features in a more user-friendly interface and gives the user more control over the converstaion and their data. Uses local models to interact with their data and stores it all locally. An exersize in learning and creating an application that I would want to use myself through the use of AI tools. Created using Cursor, Claude Code, Codex and Github Copilot.",
+    technologies: ["Vue.js", "SQLite", "Golang", "MCPs", "RAG", "Cursor", "Claude Code", "Codex", "Github Copilot"],
+    link: "https://github.com/nexfortisme/relay",
+  },
   {
     title: "Bot Person",
     image:
