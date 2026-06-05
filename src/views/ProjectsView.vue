@@ -63,6 +63,12 @@ const projects = [
     technologies: ["Vue.js", "BunJS", "SQLite"],
     link: "https://github.com/nexfortisme/oss-forums",
   },
+  {
+    title: "Dummyurl.foo",
+    image: "https://raw.githubusercontent.com/nexfortisme/asset-store/refs/heads/main/dummyurl-foo.png",
+    description: "I bought the domain a while ago to prevent abuse of it since I was using it in testing. I finally got around to making a simple tester for response codes. Super simple, no real plans for it.",
+    link: "https://dummyurl.foo"
+  }
 ];
 
 useHead({
