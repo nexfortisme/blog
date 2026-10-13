@@ -254,12 +254,19 @@ const parsedBlocks = computed(() => parseMarkdown(props.source));
 }
 
 .markdown-renderer strong {
-  font-weight: 650;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
 .markdown-renderer em {
   font-style: italic;
+}
+
+/* Ensure emphasis wins over inherited list/paragraph secondary color */
+.markdown-renderer .markdown-list-item strong,
+.markdown-renderer .markdown-paragraph strong {
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
 .markdown-renderer .markdown-inline-code {
