@@ -1,278 +1,168 @@
 <script setup>
-import { computed, defineComponent, h } from 'vue';
+import { computed, defineComponent, h } from "vue";
+import { parseMarkdown } from "../utils/parseMarkdown.js";
 
 const props = defineProps({
   source: {
     type: String,
-    default: ''
-  }
+    default: "",
+  },
 });
 
-// Simple markdown parser that handles:
-// - Headings (h1-h4)
-// - Links
-// - Bulleted lists
-// - Numbered lists
-// - Nested lists
+function renderInline(parts) {
+  if (!parts || !parts.length) return [];
 
-function parseMarkdown(markdown) {
-  if (!markdown) return [];
-  
-  const lines = markdown.split('\n');
-  const blocks = [];
-  let i = 0;
-  
-  while (i < lines.length) {
-    const line = lines[i];
-    
-    // Skip empty lines
-    if (!line.trim()) {
-      i++;
-      continue;
+  return parts.map((part, index) => {
+    switch (part.type) {
+      case "link":
+        return h(
+          "a",
+          {
+            key: index,
+            href: part.url,
+            target: "_blank",
+            rel: "noopener noreferrer",
+          },
+          part.children?.length ? renderInline(part.children) : part.text
+        );
+      case "image":
+        return h("img", {
+          key: index,
+          src: part.url,
+          alt: part.alt || "",
+          class: "markdown-image",
+          loading: "lazy",
+        });
+      case "strong":
+        return h("strong", { key: index }, renderInline(part.children));
+      case "em":
+        return h("em", { key: index }, renderInline(part.children));
+      case "code":
+        return h("code", { key: index, class: "markdown-inline-code" }, part.content);
+      default:
+        return h("span", { key: index }, part.content);
     }
-    
-    // Headings
-    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/);
-    if (headingMatch) {
-      const level = headingMatch[1].length;
-      const text = headingMatch[2];
-      blocks.push({ type: `h${level}`, content: parseInline(text) });
-      i++;
-      continue;
-    }
-    
-    // Bulleted lists
-    if (line.match(/^[\s]*[-*+]\s+/)) {
-      const listItems = [];
-      let indentLevel = 0;
-      
-      while (i < lines.length) {
-        const currentLine = lines[i];
-        const bulletMatch = currentLine.match(/^(\s*)([-*+])\s+(.+)$/);
-        
-        if (bulletMatch) {
-          const currentIndent = bulletMatch[1].length;
-          const content = bulletMatch[3];
-          
-          // Determine nesting level (every 2 spaces = 1 level)
-          const level = Math.floor(currentIndent / 2);
-          
-          if (level === 0 && listItems.length > 0 && indentLevel > 0) {
-            // We've gone back to top level, break
-            break;
-          }
-          
-          const item = {
-            level,
-            content: parseInline(content),
-            children: []
-          };
-          
-          if (level === 0) {
-            listItems.push(item);
-            indentLevel = 0;
-          } else {
-            // Find parent at level - 1
-            let parent = listItems[listItems.length - 1];
-            for (let l = 1; l < level; l++) {
-              if (parent.children.length > 0) {
-                parent = parent.children[parent.children.length - 1];
-              } else {
-                break;
-              }
-            }
-            parent.children.push(item);
-          }
-          
-          indentLevel = level;
-          i++;
-        } else if (currentLine.trim() === '') {
-          i++;
-          continue;
-        } else {
-          break;
-        }
-      }
-      
-      if (listItems.length > 0) {
-        blocks.push({ type: 'ul', items: listItems });
-      }
-      continue;
-    }
-    
-    // Numbered lists
-    if (line.match(/^[\s]*\d+\.\s+/)) {
-      const listItems = [];
-      let indentLevel = 0;
-      
-      while (i < lines.length) {
-        const currentLine = lines[i];
-        const numberedMatch = currentLine.match(/^(\s*)(\d+)\.\s+(.+)$/);
-        
-        if (numberedMatch) {
-          const currentIndent = numberedMatch[1].length;
-          const content = numberedMatch[3];
-          
-          // Determine nesting level (every 2 spaces = 1 level)
-          const level = Math.floor(currentIndent / 2);
-          
-          if (level === 0 && listItems.length > 0 && indentLevel > 0) {
-            // We've gone back to top level, break
-            break;
-          }
-          
-          const item = {
-            level,
-            content: parseInline(content),
-            children: []
-          };
-          
-          if (level === 0) {
-            listItems.push(item);
-            indentLevel = 0;
-          } else {
-            // Find parent at level - 1
-            let parent = listItems[listItems.length - 1];
-            for (let l = 1; l < level; l++) {
-              if (parent.children.length > 0) {
-                parent = parent.children[parent.children.length - 1];
-              } else {
-                break;
-              }
-            }
-            parent.children.push(item);
-          }
-          
-          indentLevel = level;
-          i++;
-        } else if (currentLine.trim() === '') {
-          i++;
-          continue;
-        } else {
-          break;
-        }
-      }
-      
-      if (listItems.length > 0) {
-        blocks.push({ type: 'ol', items: listItems });
-      }
-      continue;
-    }
-    
-    // Regular paragraph
-    const paragraphLines = [];
-    while (i < lines.length) {
-      const currentLine = lines[i];
-      if (!currentLine.trim()) {
-        break;
-      }
-      // Don't start a paragraph if it's a heading or list
-      if (currentLine.match(/^(#{1,4})\s+/) || 
-          currentLine.match(/^[\s]*[-*+]\s+/) || 
-          currentLine.match(/^[\s]*\d+\.\s+/)) {
-        break;
-      }
-      paragraphLines.push(currentLine);
-      i++;
-    }
-    
-    if (paragraphLines.length > 0) {
-      blocks.push({ 
-        type: 'p', 
-        content: parseInline(paragraphLines.join(' ')) 
-      });
-    }
-  }
-  
-  return blocks;
+  });
 }
 
-// Parse inline elements (links, bold, italic, etc.)
-function parseInline(text) {
-  const parts = [];
-  let currentIndex = 0;
-  
-  // Match links: [text](url)
-  const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
-  let match;
-  
-  while ((match = linkRegex.exec(text)) !== null) {
-    // Add text before the link
-    if (match.index > currentIndex) {
-      const beforeText = text.substring(currentIndex, match.index);
-      if (beforeText) {
-        parts.push({ type: 'text', content: beforeText });
-      }
-    }
-    
-    // Add the link
-    parts.push({
-      type: 'link',
-      text: match[1],
-      url: match[2]
-    });
-    
-    currentIndex = match.index + match[0].length;
-  }
-  
-  // Add remaining text
-  if (currentIndex < text.length) {
-    const remainingText = text.substring(currentIndex);
-    if (remainingText) {
-      parts.push({ type: 'text', content: remainingText });
-    }
-  }
-  
-  // If no links were found, return the whole text as a single part
-  if (parts.length === 0) {
-    parts.push({ type: 'text', content: text });
-  }
-  
-  return parts;
-}
-
-// Recursive list item component
 const ListItem = defineComponent({
-  name: 'ListItem',
+  name: "ListItem",
   props: {
     item: {
       type: Object,
-      required: true
+      required: true,
     },
     isOrdered: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
-  setup(props) {
+  setup(itemProps) {
     return () => {
-      const listTag = props.isOrdered ? 'ol' : 'ul';
-      const listClass = props.isOrdered 
-        ? 'markdown-list markdown-ol markdown-nested' 
-        : 'markdown-list markdown-ul markdown-nested';
-      
-      const children = props.item.children && props.item.children.length > 0
-        ? h(listTag, { class: listClass }, 
-            props.item.children.map((child, index) => 
-              h(ListItem, { key: index, item: child, isOrdered: props.isOrdered })
+      const listTag = itemProps.isOrdered ? "ol" : "ul";
+      const listClass = itemProps.isOrdered
+        ? "markdown-list markdown-ol markdown-nested"
+        : "markdown-list markdown-ul markdown-nested";
+
+      const children =
+        itemProps.item.children && itemProps.item.children.length > 0
+          ? h(
+              listTag,
+              { class: listClass },
+              itemProps.item.children.map((child, index) =>
+                h(ListItem, {
+                  key: index,
+                  item: child,
+                  isOrdered: itemProps.isOrdered,
+                })
+              )
             )
-          )
-        : null;
-      
-      return h('li', { class: 'markdown-list-item' }, [
-        ...props.item.content.map((part, index) => 
-          part.type === 'link'
-            ? h('a', { 
-                href: part.url, 
-                target: '_blank', 
-                rel: 'noopener noreferrer' 
-              }, part.text)
-            : h('span', part.content)
-        ),
-        children
+          : null;
+
+      return h("li", { class: "markdown-list-item" }, [
+        ...renderInline(itemProps.item.content),
+        children,
       ]);
     };
-  }
+  },
+});
+
+const BlockNodes = defineComponent({
+  name: "BlockNodes",
+  props: {
+    blocks: {
+      type: Array,
+      required: true,
+    },
+  },
+  setup(blockProps) {
+    return () =>
+      blockProps.blocks.map((block, index) => {
+        if (block.type.startsWith("h")) {
+          return h(
+            block.type,
+            { key: index, class: "markdown-heading" },
+            renderInline(block.content)
+          );
+        }
+
+        if (block.type === "p") {
+          return h(
+            "p",
+            { key: index, class: "markdown-paragraph" },
+            renderInline(block.content)
+          );
+        }
+
+        if (block.type === "ul" || block.type === "ol") {
+          return h(
+            block.type,
+            {
+              key: index,
+              class:
+                block.type === "ul"
+                  ? "markdown-list markdown-ul"
+                  : "markdown-list markdown-ol",
+            },
+            block.items.map((item, itemIndex) =>
+              h(ListItem, {
+                key: itemIndex,
+                item,
+                isOrdered: block.type === "ol",
+              })
+            )
+          );
+        }
+
+        if (block.type === "blockquote") {
+          return h(
+            "blockquote",
+            { key: index, class: "markdown-blockquote" },
+            h(BlockNodes, { blocks: block.children || [] })
+          );
+        }
+
+        if (block.type === "code") {
+          return h("pre", { key: index, class: "markdown-code-block" }, [
+            h(
+              "code",
+              {
+                class: block.lang
+                  ? `language-${block.lang}`
+                  : undefined,
+              },
+              block.content
+            ),
+          ]);
+        }
+
+        if (block.type === "hr") {
+          return h("hr", { key: index, class: "markdown-hr" });
+        }
+
+        return null;
+      });
+  },
 });
 
 const parsedBlocks = computed(() => parseMarkdown(props.source));
@@ -280,118 +170,159 @@ const parsedBlocks = computed(() => parseMarkdown(props.source));
 
 <template>
   <div class="markdown-renderer">
-    <template v-for="(block, index) in parsedBlocks" :key="index">
-      <!-- Headings -->
-      <component 
-        v-if="block.type.startsWith('h')" 
-        :is="block.type"
-        class="markdown-heading"
-      >
-        <template v-for="(part, partIndex) in block.content" :key="partIndex">
-          <a v-if="part.type === 'link'" :href="part.url" target="_blank" rel="noopener noreferrer">
-            {{ part.text }}
-          </a>
-          <span v-else>{{ part.content }}</span>
-        </template>
-      </component>
-      
-      <!-- Paragraphs -->
-      <p v-else-if="block.type === 'p'" class="markdown-paragraph">
-        <template v-for="(part, partIndex) in block.content" :key="partIndex">
-          <a v-if="part.type === 'link'" :href="part.url" target="_blank" rel="noopener noreferrer">
-            {{ part.text }}
-          </a>
-          <span v-else>{{ part.content }}</span>
-        </template>
-      </p>
-      
-      <!-- Unordered Lists -->
-      <ul v-else-if="block.type === 'ul'" class="markdown-list markdown-ul">
-        <ListItem 
-          v-for="(item, itemIndex) in block.items" 
-          :key="itemIndex"
-          :item="item"
-          :is-ordered="false"
-        />
-      </ul>
-      
-      <!-- Ordered Lists -->
-      <ol v-else-if="block.type === 'ol'" class="markdown-list markdown-ol">
-        <ListItem 
-          v-for="(item, itemIndex) in block.items" 
-          :key="itemIndex"
-          :item="item"
-          :is-ordered="true"
-        />
-      </ol>
-    </template>
+    <BlockNodes :blocks="parsedBlocks" />
   </div>
 </template>
 
-<style scoped>
+<style>
+/* Unscoped but namespaced: render tree is built with h() child components. */
 .markdown-renderer {
   width: 100%;
 }
 
-.markdown-heading {
-  margin-top: 1.5em;
-  margin-bottom: 0.5em;
+.markdown-renderer .markdown-heading {
+  margin-top: 1.75em;
+  margin-bottom: 0.6em;
   font-weight: 600;
   line-height: 1.25;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
 }
 
-.markdown-renderer h1 {
-  font-size: 2em;
+.markdown-renderer h1.markdown-heading {
+  font-size: 1.85em;
   border-bottom: 1px solid var(--border-color, #eaecef);
   padding-bottom: 0.3em;
 }
 
-.markdown-renderer h2 {
-  font-size: 1.5em;
+.markdown-renderer h2.markdown-heading {
+  font-size: 1.45em;
 }
 
-.markdown-renderer h3 {
-  font-size: 1.25em;
+.markdown-renderer h3.markdown-heading {
+  font-size: 1.2em;
 }
 
-.markdown-renderer h4 {
-  font-size: 1em;
+.markdown-renderer h4.markdown-heading,
+.markdown-renderer h5.markdown-heading,
+.markdown-renderer h6.markdown-heading {
+  font-size: 1.05em;
 }
 
-.markdown-paragraph {
-  margin-bottom: 1em;
+.markdown-renderer .markdown-paragraph {
+  margin-bottom: 1.15em;
   line-height: 1.8;
+  color: var(--text-secondary);
 }
 
-.markdown-list {
-  margin-bottom: 1em;
-  padding-left: 2em;
+.markdown-renderer .markdown-list {
+  margin-bottom: 1.15em;
+  padding-left: 1.5em;
+  color: var(--text-secondary);
 }
 
-.markdown-ul {
+.markdown-renderer .markdown-ul {
   list-style-type: disc;
 }
 
-.markdown-ol {
+.markdown-renderer .markdown-ol {
   list-style-type: decimal;
 }
 
-.markdown-nested {
-  margin-top: 0.5em;
-  margin-bottom: 0.5em;
+.markdown-renderer .markdown-nested {
+  margin-top: 0.4em;
+  margin-bottom: 0.4em;
 }
 
-.markdown-list-item {
-  margin-bottom: 0.5em;
+.markdown-renderer .markdown-list-item {
+  margin-bottom: 0.4em;
   line-height: 1.8;
+  padding-left: 0.15em;
 }
 
 .markdown-renderer a {
-  color: var(--accent-color, #0066cc);
-  text-decoration: none;
+  color: var(--accent-text, #0066cc);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.15em;
+  text-decoration-color: rgba(var(--accent-color-rgb), 0.45);
+  transition: text-decoration-color 0.2s ease, color 0.2s ease;
 }
 
 .markdown-renderer a:hover {
-  text-decoration: underline;
+  text-decoration-color: var(--accent-color);
+}
+
+.markdown-renderer strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.markdown-renderer em {
+  font-style: italic;
+}
+
+/* Ensure emphasis wins over inherited list/paragraph secondary color */
+.markdown-renderer .markdown-list-item strong,
+.markdown-renderer .markdown-paragraph strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.markdown-renderer .markdown-inline-code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 0.12em 0.4em;
+  color: var(--text-primary);
+}
+
+.markdown-renderer .markdown-code-block {
+  margin: 1.25em 0;
+  padding: 1rem 1.1rem;
+  overflow-x: auto;
+  border-radius: var(--radius, 8px);
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  line-height: 1.55;
+}
+
+.markdown-renderer .markdown-code-block code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  white-space: pre;
+}
+
+.markdown-renderer .markdown-blockquote {
+  margin: 1.25em 0;
+  padding: 0.5em 1em;
+  background-color: var(--accent-soft);
+  border-radius: 0 var(--radius-sm, 6px) var(--radius-sm, 6px) 0;
+  border-left: 3px solid var(--accent-color);
+  color: var(--text-secondary);
+}
+
+.markdown-renderer .markdown-blockquote .markdown-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-renderer .markdown-hr {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 2em 0;
+}
+
+.markdown-renderer .markdown-image {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 1.25em 0;
+  border-radius: 6px;
 }
 </style>

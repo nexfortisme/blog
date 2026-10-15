@@ -1,13 +1,16 @@
 <script setup>
 import { ref, onMounted, computed, watch } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useHead } from "@unhead/vue";
 import Breadcrumb from "../components/Breadcrumb.vue";
+import PostCard from "../components/PostCard.vue";
+import { POSTS_INDEX_URL, TAG_INDEX_URL } from "../utils/posts.js";
 
 const route = useRoute();
 const router = useRouter();
 const posts = ref([]);
 const tags = ref([]);
+const loading = ref(true);
 const selectedTags = ref(new Set());
 
 useHead({
@@ -74,9 +77,7 @@ const loadTagsFromQuery = () => {
 
 onMounted(async () => {
   try {
-    const postsResponse = await fetch(
-      "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json"
-    );
+    const postsResponse = await fetch(POSTS_INDEX_URL);
     const postData = await postsResponse.json();
     posts.value = postData;
   } catch (error) {
@@ -84,9 +85,7 @@ onMounted(async () => {
   }
 
   try {
-    const tagResponse = await fetch(
-      "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/tag_index.json"
-    );
+    const tagResponse = await fetch(TAG_INDEX_URL);
     const tagData = await tagResponse.json();
     tags.value = tagData;
   } catch (error) {
@@ -95,6 +94,7 @@ onMounted(async () => {
 
   // Load tags from query params after tags are loaded
   loadTagsFromQuery();
+  loading.value = false;
 });
 
 // Watch for route query changes (e.g., browser back/forward)
@@ -105,39 +105,28 @@ watch(
   }
 );
 
-const formatDate = (dateString) => {
-  if (!dateString || dateString === "0001-01-01T00:00:00Z") return "";
-  const date = new Date(dateString);
-  const months = [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ];
-  return `${date.getDate()} ${months[date.getMonth()]}, ${date.getFullYear()}`;
-};
 </script>
 
 <template>
   <div class="posts-container">
     <Breadcrumb :items="breadcrumbItems" />
-    <h1>Posts</h1>
+    <header class="page-header">
+      <h1 class="page-title">Posts</h1>
+      <p class="page-subtitle">
+        Notes on side projects, things I've learned, and problems I've had to
+        dig my way out of.
+      </p>
+    </header>
 
     <!-- Filter Bar -->
-    <div v-if="tags.length > 0" class="filter-bar">
+    <div v-if="tags.length > 0" class="filter-bar" role="group" aria-label="Filter posts by tag">
       <div class="filter-header">
-        <span class="filter-label">Filter by tags:</span>
+        <span class="filter-label">Filter by tag</span>
         <button
+          v-if="selectedTags.size > 0"
+          type="button"
+          class="clear-filters-btn"
           @click="clearFilters"
-          :class="['clear-filters-btn', { show: selectedTags.size > 0 }]"
         >
           Clear filters
         </button>
@@ -146,238 +135,96 @@ const formatDate = (dateString) => {
         <button
           v-for="tag in tags"
           :key="tag"
+          type="button"
           @click="toggleTag(tag)"
-          :class="['filter-tag', { active: selectedTags.has(tag) }]"
+          :class="['chip', { active: selectedTags.has(tag) }]"
+          :aria-pressed="selectedTags.has(tag)"
         >
           {{ tag }}
         </button>
       </div>
-      <div v-if="selectedTags.size > 0" class="filter-info">
+      <div v-if="selectedTags.size > 0" class="filter-info" aria-live="polite">
         Showing {{ filteredPosts.length }} of {{ posts.length }} posts
       </div>
     </div>
 
-    <!-- <div v-if="posts.length > 0" class="filter-divider"></div> -->
-
-    <div v-if="posts.length === 0" class="loading">Loading posts...</div>
-    <div v-else-if="filteredPosts.length === 0" class="no-results">
+    <div v-if="loading" class="status muted">Loading posts...</div>
+    <div v-else-if="posts.length === 0" class="status muted">
+      Couldn't load posts right now.
+    </div>
+    <div v-else-if="filteredPosts.length === 0" class="status muted">
       No posts match the selected filters.
     </div>
     <div v-else class="posts-list">
-      <template v-for="(post, index) in filteredPosts" :key="post.id">
-        <article class="post-card">
-          <RouterLink :to="`/posts/${post.id}`" class="post-link">
-            <h2>{{ post.title || "Untitled" }}</h2>
-            <div v-if="post.createdAt" class="post-date">
-              {{ formatDate(post.createdAt) }}
-            </div>
-            <p v-if="post.description" class="description">
-              {{ post.description }}
-            </p>
-          </RouterLink>
-          <div v-if="post.tags && post.tags.length" class="tags">
-            <span
-              v-for="tag in post.tags"
-              :key="tag"
-              class="tag"
-              :class="{ active: selectedTags.has(tag) }"
-              @click="toggleTag(tag)"
-            >
-              {{ tag }}
-            </span>
-          </div>
-        </article>
-        <div v-if="index < filteredPosts.length - 1" class="post-divider"></div>
-      </template>
+      <PostCard
+        v-for="post in filteredPosts"
+        :key="post.id"
+        :post="post"
+        :selected-tags="selectedTags"
+        interactive-tags
+        @tag-click="toggleTag"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
-.posts-container {
-  padding: 0;
-}
-
-h1 {
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-  font-weight: 400;
-  transition: color 0.3s ease;
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: var(--text-tertiary);
-  transition: color 0.3s ease;
-}
-
-.post-date {
-  color: var(--text-tertiary);
-  font-size: 0.9rem;
-  margin-bottom: 0.75rem;
-  transition: color 0.3s ease;
-}
-
-.posts-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.post-card {
-  transition: opacity 0.2s;
-  padding: 2rem 0;
-}
-
-.post-card:hover {
-  opacity: 0.8;
-}
-
-.post-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-
-.post-link h2 {
-  margin: 0 0 0.5rem 0;
-  color: var(--accent-color);
-  font-weight: 400;
-  transition: color 0.3s ease;
-}
-
-.description {
-  color: var(--text-secondary);
-  margin: 0.5rem 0;
-  line-height: 1.6;
-  transition: color 0.3s ease;
-}
-
-.tags {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  flex-wrap: wrap;
-}
-
-.tag {
-  background-color: rgba(var(--accent-color-rgb), 0.2);
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: var(--accent-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-  cursor: pointer;
-  display: inline-block;
-}
-
-.tag:hover {
-  background-color: rgba(var(--accent-color-rgb), 0.3);
-}
-
-.tag.active {
-  background-color: rgba(var(--accent-color-rgb), 0.4);
-  font-weight: 500;
-}
-
 .filter-bar {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-6);
+  padding: var(--space-4) var(--space-5);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius);
 }
 
 .filter-header {
-  position: relative;
-  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2rem;
+  margin-bottom: var(--space-3);
 }
 
 .filter-label {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
 }
 
 .clear-filters-btn {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
   background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary);
-  padding: 0.4rem 0.8rem;
-  border-radius: 4px;
+  border: none;
+  color: var(--accent-text);
+  font: inherit;
+  font-size: var(--text-sm);
   cursor: pointer;
-  font-size: 0.875rem;
-  transition: all 0.3s ease;
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.clear-filters-btn.show {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
 }
 
 .clear-filters-btn:hover {
-  background-color: rgba(var(--accent-color-rgb), 0.1);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
+  text-decoration: underline;
 }
 
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.filter-tag {
-  background-color: rgba(var(--accent-color-rgb), 0.1);
-  border: 1px solid var(--border-color);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.filter-tag:hover {
-  background-color: rgba(var(--accent-color-rgb), 0.2);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-}
-
-.filter-tag.active {
-  background-color: rgba(var(--accent-color-rgb), 0.3);
-  border-color: var(--accent-color);
-  color: var(--accent-color);
-  font-weight: 500;
+  gap: var(--space-2);
 }
 
 .filter-info {
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
   color: var(--text-tertiary);
-  font-size: 0.875rem;
+  font-size: var(--text-sm);
 }
 
-.filter-divider {
-  height: 1px;
-  background-color: var(--border-color);
-  margin-bottom: 1rem;
-  transition: background-color 0.3s ease;
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.post-divider {
-  height: 1px;
-  background-color: var(--border-color);
-  transition: background-color 0.3s ease;
-}
-
-.no-results {
+.status {
   text-align: center;
-  padding: 3rem 2rem;
-  color: var(--text-tertiary);
-  font-size: 1rem;
+  padding: var(--space-7) var(--space-6);
 }
 </style>

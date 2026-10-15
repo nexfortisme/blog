@@ -4,7 +4,7 @@ This repository contains a Vue 3 single-page app (SPA) that serves as my persona
 
 ## What the app does
 
-- Home page (`/`) with a recent posts section and contact links.
+- Home page (`/`) with an intro hero, recent posts, featured projects, and contact links.
 - Posts index (`/posts`) loads posts and available tags from `index.json` and `tag_index.json`.
 - Posts index (`/posts`) lets you filter posts by clicking tags (filter state is stored in the URL query params as `tags`).
 - Post detail page (`/posts/:postId`) loads the post from `index.json` and fetches its markdown from the post's `githubPath`.
@@ -12,15 +12,22 @@ This repository contains a Vue 3 single-page app (SPA) that serves as my persona
 - About page (`/about-me`).
 - Resume page (`/about-me/resume`) is rendered from in-code data by default (and shows a PDF link button).
 - Resume page (`/about-me/resume`) includes tabbed sections (Experience, Skills, Education, Projects, Activities).
-- Projects page (`/about-me/projects`) with a small curated project list.
+- Projects page (`/about-me/projects`) with featured projects and a "more projects" grid. Project data lives in `src/data/projects.js` and is shared with the Resume "Projects" tab and the Home page.
 - Theme toggle (dark/light) is controlled via a local `theme` value in `localStorage` and toggles `dark`/`light` classes on `document.documentElement`.
+
+## Styling
+
+- Global design tokens (colors, type scale, spacing, radii, motion) live at the top of `src/assets/main.css`. Light theme overrides are under `:root.light`.
+- Shared utility classes (`.page-title`, `.section-heading`, `.chip`, `.btn`, `.surface`) are defined in the same file so views stay consistent.
+- Fonts: Inter (UI/body) and JetBrains Mono (code, dates, labels) via Google Fonts in `index.html`.
+- Animations are disabled for users with `prefers-reduced-motion`.
 
 ## Tech stack
 
 - Frontend: Vue 3 + Vue Router + Vite
 - Head/meta tags: `@unhead/vue`
 - Icons: FontAwesome (`@fortawesome/vue-fontawesome`)
-- Content rendering: a small custom markdown renderer (headings, links, lists, paragraphs)
+- Content rendering: a small custom markdown renderer (headings, paragraphs, nested lists, blockquotes, fenced/inline code, links, images, bold/italic, horizontal rules)
 - Content index generator: Go (`content/scripts/main.go`)
 
 ## Running locally

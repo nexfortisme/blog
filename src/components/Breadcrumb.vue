@@ -34,7 +34,7 @@ defineProps({
           class="breadcrumb-separator"
           aria-hidden="true"
         >
-          >
+          /
         </span>
       </li>
     </ol>
@@ -43,7 +43,7 @@ defineProps({
 
 <style scoped>
 .breadcrumb {
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-5);
 }
 
 .breadcrumb-list {
@@ -70,7 +70,7 @@ defineProps({
 }
 
 .breadcrumb-link:hover {
-  color: var(--accent-color);
+  color: var(--accent-text);
 }
 
 .breadcrumb-current {

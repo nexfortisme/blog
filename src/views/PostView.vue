@@ -1,8 +1,13 @@
 <script setup>
-import { onMounted, ref, computed, watchEffect } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { onMounted, ref, computed } from "vue";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import Breadcrumb from "../components/Breadcrumb.vue";
 import MarkdownRenderer from "../components/MarkdownRenderer.vue";
+import {
+  stripFrontmatter,
+  stripLeadingTitleHeading,
+} from "../utils/parseMarkdown.js";
+import { POSTS_INDEX_URL, formatDate, readingTime } from "../utils/posts.js";
 
 import { useHead } from "@unhead/vue";
 
@@ -48,22 +53,12 @@ const breadcrumbItems = computed(() => {
   ];
 });
 
-const stripFrontmatter = (markdown) => {
-  if (!markdown) return "";
-
-  // Match frontmatter between ---- and ----
-  const frontmatterRegex = /^----\s*\n[\s\S]*?\n----\s*\n/;
-  return markdown.replace(frontmatterRegex, "").trim();
-};
-
 onMounted(async () => {
   try {
     const postId = route.params.postId;
 
     // Load posts index to get the post details
-    const response = await fetch(
-      "https://raw.githubusercontent.com/nexfortisme/content/refs/heads/main/index.json"
-    );
+    const response = await fetch(POSTS_INDEX_URL);
     const posts = await response.json();
     const foundPost = posts.find((p) => p.id === parseInt(postId)); // This could cause performance issues with a whole bunch of posts but I dont really yap that much
 
@@ -73,8 +68,10 @@ onMounted(async () => {
       // Load the markdown content
       const contentResponse = await fetch(foundPost.githubPath);
       if (contentResponse.ok) {
-        const rawContnet = await contentResponse.text();
-        content.value = stripFrontmatter(rawContnet);
+        const rawContent = await contentResponse.text();
+        const body = stripFrontmatter(rawContent);
+        // Avoid repeating the page title when the markdown body starts with the same h1
+        content.value = stripLeadingTitleHeading(body, foundPost.title);
       }
     }
   } catch (error) {
@@ -87,89 +84,116 @@ onMounted(async () => {
 
 <template>
   <div class="post-detail-container">
-    <div v-if="loading" class="loading">Loading post...</div>
-    <div v-else-if="!post" class="error">Post not found</div>
+    <div v-if="loading" class="status muted">Loading post...</div>
+    <div v-else-if="!post" class="status error">
+      <p>Post not found.</p>
+      <RouterLink to="/posts">Back to all posts</RouterLink>
+    </div>
     <article v-else class="post-content">
       <Breadcrumb :items="breadcrumbItems" />
-      <h1>{{ post.title || "Untitled" }}</h1>
-      <div v-if="post.description" class="description">
-        {{ post.description }}
-      </div>
-      <div v-if="post.tags && post.tags.length" class="tags">
-        <span
-          v-for="tag in post.tags"
-          :key="tag"
-          class="tag"
-          @click="navigateToPostsWithTag(tag)"
-        >
-          {{ tag }}
-        </span>
-      </div>
+      <header class="post-header">
+        <div class="post-meta">
+          <time v-if="formatDate(post.createdAt)" :datetime="post.createdAt">
+            {{ formatDate(post.createdAt) }}
+          </time>
+          <span v-if="formatDate(post.createdAt) && content" aria-hidden="true">·</span>
+          <span v-if="content">{{ readingTime(content) }}</span>
+        </div>
+        <h1 class="post-title">{{ post.title || "Untitled" }}</h1>
+        <p v-if="post.description" class="description">
+          {{ post.description }}
+        </p>
+        <div v-if="post.tags && post.tags.length" class="tags">
+          <button
+            v-for="tag in post.tags"
+            :key="tag"
+            type="button"
+            class="chip"
+            @click="navigateToPostsWithTag(tag)"
+          >
+            {{ tag }}
+          </button>
+        </div>
+      </header>
       <div class="markdown-content">
         <MarkdownRenderer :source="content" />
       </div>
+      <footer class="post-footer">
+        <RouterLink :to="{ name: 'Posts', query: route.query }">← All posts</RouterLink>
+      </footer>
     </article>
   </div>
 </template>
 
 <style scoped>
-.post-detail-container {
-  padding: 0;
-}
-
-.loading,
-.error {
+.status {
   text-align: center;
-  padding: 2rem;
+  padding: var(--space-7) var(--space-6);
+}
+
+.error p {
+  color: #ef4444;
+  margin-bottom: var(--space-3);
+}
+
+/* Long-form reading: keep lines to a comfortable measure */
+.post-content {
+  max-width: var(--measure);
+  margin: 0 auto;
+}
+
+.post-header {
+  padding-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.post-meta {
+  display: flex;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--text-tertiary);
-  transition: color 0.3s ease;
+  margin-bottom: var(--space-3);
 }
 
-.error {
-  color: #ff6b6b;
-}
-
-.post-content h1 {
-  margin-bottom: 1rem;
-  color: var(--text-primary);
-  font-weight: 400;
-  transition: color 0.3s ease;
+.post-title {
+  font-size: var(--text-3xl);
+  font-weight: 700;
+  margin-bottom: var(--space-3);
 }
 
 .description {
   color: var(--text-secondary);
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+  font-size: var(--text-lg);
   line-height: 1.6;
-  transition: color 0.3s ease;
+  margin-bottom: var(--space-4);
 }
 
 .tags {
   display: flex;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+  gap: var(--space-2);
   flex-wrap: wrap;
 }
 
-.tag {
-  background-color: rgba(var(--accent-color-rgb), 0.2);
-  padding: 0.25rem 0.75rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  color: var(--accent-color);
-  transition: background-color 0.3s ease, color 0.3s ease;
-  cursor: pointer;
-  display: inline-block;
-}
-
-.tag:hover {
-  background-color: rgba(var(--accent-color-rgb), 0.3);
-}
-
 .markdown-content {
-  margin-top: 2rem;
+  font-size: 1.0625rem;
   line-height: 1.8;
   color: var(--text-secondary);
-  transition: color 0.3s ease;
+}
+
+.post-footer {
+  margin-top: var(--space-7);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--border-color);
+}
+
+.post-footer a {
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.post-footer a:hover {
+  text-decoration: underline;
 }
 </style>
