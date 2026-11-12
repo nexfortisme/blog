@@ -20,7 +20,7 @@ This repository contains a Vue 3 single-page app (SPA) that serves as my persona
 - Frontend: Vue 3 + Vue Router + Vite
 - Head/meta tags: `@unhead/vue`
 - Icons: FontAwesome (`@fortawesome/vue-fontawesome`)
-- Content rendering: a small custom markdown renderer (headings, links, lists, paragraphs)
+- Content rendering: a small custom markdown renderer (headings, paragraphs, nested lists, blockquotes, fenced/inline code, links, images, bold/italic, horizontal rules)
 - Content index generator: Go (`content/scripts/main.go`)
 
 ## Running locally

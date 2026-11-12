@@ -3,6 +3,10 @@ import { onMounted, ref, computed, watchEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import Breadcrumb from "../components/Breadcrumb.vue";
 import MarkdownRenderer from "../components/MarkdownRenderer.vue";
+import {
+  stripFrontmatter,
+  stripLeadingTitleHeading,
+} from "../utils/parseMarkdown.js";
 
 import { useHead } from "@unhead/vue";
 
@@ -48,14 +52,6 @@ const breadcrumbItems = computed(() => {
   ];
 });
 
-const stripFrontmatter = (markdown) => {
-  if (!markdown) return "";
-
-  // Match frontmatter between ---- and ----
-  const frontmatterRegex = /^----\s*\n[\s\S]*?\n----\s*\n/;
-  return markdown.replace(frontmatterRegex, "").trim();
-};
-
 onMounted(async () => {
   try {
     const postId = route.params.postId;
@@ -73,8 +69,10 @@ onMounted(async () => {
       // Load the markdown content
       const contentResponse = await fetch(foundPost.githubPath);
       if (contentResponse.ok) {
-        const rawContnet = await contentResponse.text();
-        content.value = stripFrontmatter(rawContnet);
+        const rawContent = await contentResponse.text();
+        const body = stripFrontmatter(rawContent);
+        // Avoid repeating the page title when the markdown body starts with the same h1
+        content.value = stripLeadingTitleHeading(body, foundPost.title);
       }
     }
   } catch (error) {
