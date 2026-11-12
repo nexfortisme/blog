@@ -25,7 +25,9 @@ useHead({
 <template>
   <div class="about-me-container">
     <Breadcrumb :items="breadcrumbItems" />
-    <h1>About Me</h1>
+    <header class="page-header">
+      <h1 class="page-title">About Me</h1>
+    </header>
     <div class="content">
       <p>
         Hi, my name is David. I am a full-stack developer in the DMV area. I
@@ -34,10 +36,12 @@ useHead({
         Registration Systems. I enjoy building software that people use and are
         able to get a tangible benefit from.
       </p>
-      <br />
       <p>
         Some personal projects I have been working on include
-        <a href="https://github.com/nexfortisme/bot-person" target="_blank"
+        <a
+          href="https://github.com/nexfortisme/bot-person"
+          target="_blank"
+          rel="noopener noreferrer"
           >Bot Person</a
         >, my Discord bot with ChatGPT, Dall-e, and Sora integration, and other
         half-baked attempts at trying to add further utility to it. It started
@@ -45,54 +49,61 @@ useHead({
         current iteration as ways to make it more useful and limit the runaway
         costs of using the OpenAI APIs. Find a list of more projects <RouterLink :to="{name: 'Projects'}">here</RouterLink>.
       </p>
-      <br />
       <p>
         Outside of work, my interests include gaming (PC primarily), Formula 1,
         and traveling. I’ve gotten the chance to see an F1 race in the UK at
         Silverstone, which turned out to be the best race of the season (<a
           href="https://en.wikipedia.org/wiki/2022_British_Grand_Prix"
           target="_blank"
+          rel="noopener noreferrer"
           >See Attached</a
         >). Beyond going to races, I’ve been to France, Germany, Switzerland,
         and Japan, with more trips planned in the future.
       </p>
-      <br />
       <p>
         For those looking for my resume,
         <RouterLink :to="{ name: 'Resume' }">find it here</RouterLink>.
       </p>
-      <br />
-      <div style="display: flex; flex-direction: column; align-items: center">
-        <h4>Random picture of myself holding a puppy</h4>
-        <img src="../assets/images/20230721_182820.JPG" style="width: 50%" />
-      </div>
+      <figure class="photo">
+        <img
+          src="../assets/images/20230721_182820.JPG"
+          alt="David holding a puppy"
+          loading="lazy"
+        />
+        <figcaption>Random picture of myself holding a puppy</figcaption>
+      </figure>
     </div>
   </div>
 </template>
 
 <style scoped>
-.about-me-container {
-  padding: 0;
-}
-
-a {
-  color: var(--accent-color);
-}
-
-h1 {
-  margin-bottom: 2rem;
-  color: var(--text-primary);
-  font-weight: 400;
-  transition: color 0.3s ease;
-}
-
 .content {
-  line-height: 1.6;
+  max-width: var(--measure);
+  font-size: 1.0625rem;
+  line-height: 1.75;
   color: var(--text-secondary);
-  transition: color 0.3s ease;
 }
 
 .content p {
-  margin-bottom: 1rem;
+  margin-bottom: var(--space-5);
+}
+
+.photo {
+  margin-top: var(--space-6);
+  max-width: 22rem;
+}
+
+.photo img {
+  display: block;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+.photo figcaption {
+  margin-top: var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
 }
 </style>

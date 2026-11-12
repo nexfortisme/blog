@@ -241,7 +241,7 @@ const parsedBlocks = computed(() => parseMarkdown(props.source));
 }
 
 .markdown-renderer a {
-  color: var(--accent-color, #0066cc);
+  color: var(--accent-text, #0066cc);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 0.15em;
@@ -270,8 +270,7 @@ const parsedBlocks = computed(() => parseMarkdown(props.source));
 }
 
 .markdown-renderer .markdown-inline-code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
@@ -284,15 +283,14 @@ const parsedBlocks = computed(() => parseMarkdown(props.source));
   margin: 1.25em 0;
   padding: 1rem 1.1rem;
   overflow-x: auto;
-  border-radius: 8px;
+  border-radius: var(--radius, 8px);
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   line-height: 1.55;
 }
 
 .markdown-renderer .markdown-code-block code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-    "Liberation Mono", monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
   color: var(--text-primary);
   background: transparent;
@@ -303,7 +301,9 @@ const parsedBlocks = computed(() => parseMarkdown(props.source));
 
 .markdown-renderer .markdown-blockquote {
   margin: 1.25em 0;
-  padding: 0.15em 0 0.15em 1em;
+  padding: 0.5em 1em;
+  background-color: var(--accent-soft);
+  border-radius: 0 var(--radius-sm, 6px) var(--radius-sm, 6px) 0;
   border-left: 3px solid var(--accent-color);
   color: var(--text-secondary);
 }
